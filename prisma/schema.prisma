@@ -1,0 +1,298 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== USER & AUTH ====================
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  passwordHash      String
+  firstName         String?
+  lastName          String?
+  phone             String?
+  avatarUrl         String?
+  isEmailVerified   Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  profile           Profile?
+  settings          UserSettings?
+  resumes           Resume[]
+  coverLetters      CoverLetter[]
+  applications      Application[]
+  savedJobs         SavedJob[]
+  notifications     Notification[]
+  otpCodes          OtpCode[]
+
+  @@map("users")
+}
+
+model OtpCode {
+  id        String    @id @default(cuid())
+  code      String
+  type      OtpType
+  expiresAt DateTime
+  used      Boolean   @default(false)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+
+  @@map("otp_codes")
+}
+
+enum OtpType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+model Profile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  headline        String?
+  summary         String?
+  location        String?
+  linkedinUrl     String?
+  portfolioUrl    String?
+  yearsExperience Int?
+  skills          String[] // Array of skills
+  updatedAt       DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+model UserSettings {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Work Authorization
+  workAuthorization     String?
+  requiresSponsorship   Boolean  @default(false)
+  
+  // Demographics (optional, for diversity tracking)
+  gender                String?
+  ethnicity             String?
+  veteranStatus         String?
+  disabilityStatus      String?
+  
+  // Preferences
+  emailNotifications    Boolean  @default(true)
+  autoApplyEnabled      Boolean  @default(false)
+  preferredJobTypes     String[] // ["full-time", "contract", etc.]
+  preferredLocations    String[]
+  minSalary             Int?
+  
+  updatedAt             DateTime @updatedAt
+
+  @@map("user_settings")
+}
+
+// ==================== RESUME ====================
+
+model Resume {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title           String
+  originalFileUrl String?   // Uploaded file
+  isDefault       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Parsed/Edited Content
+  content         ResumeContent?
+  applications    Application[]
+
+  @@map("resumes")
+}
+
+model ResumeContent {
+  id            String   @id @default(cuid())
+  resumeId      String   @unique
+  resume        Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  
+  // Personal Info
+  fullName      String?
+  email         String?
+  phone         String?
+  location      String?
+  
+  // Sections (stored as JSON for flexibility)
+  summary       String?
+  experience    Json?    // Array of work experiences
+  education     Json?    // Array of education entries
+  skills        String[]
+  certifications Json?
+  projects      Json?
+  
+  updatedAt     DateTime @updatedAt
+
+  @@map("resume_contents")
+}
+
+// ==================== COVER LETTER ====================
+
+model CoverLetter {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  content      String   @db.Text
+  jobTitle     String?
+  companyName  String?
+  isGenerated  Boolean  @default(false) // AI-generated or manual
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  applications Application[]
+
+  @@map("cover_letters")
+}
+
+// ==================== JOBS ====================
+
+model Job {
+  id              String    @id @default(cuid())
+  externalId      String?   @unique // If scraped from external source
+  title           String
+  company         String
+  companyLogo     String?
+  location        String
+  locationType    LocationType
+  employmentType  EmploymentType
+  experienceLevel ExperienceLevel
+  salary          String?
+  salaryMin       Int?
+  salaryMax       Int?
+  description     String    @db.Text
+  requirements    String[]
+  benefits        String[]
+  skills          String[]
+  applicationUrl  String?
+  isActive        Boolean   @default(true)
+  postedAt        DateTime
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  savedBy         SavedJob[]
+  applications    Application[]
+
+  // For search optimization
+  @@index([title, company, location])
+  @@index([employmentType, locationType, experienceLevel])
+  @@map("jobs")
+}
+
+enum LocationType {
+  REMOTE
+  ONSITE
+  HYBRID
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  TEMPORARY
+}
+
+enum ExperienceLevel {
+  ENTRY
+  MID
+  SENIOR
+  LEAD
+  EXECUTIVE
+}
+
+model SavedJob {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, jobId])
+  @@map("saved_jobs")
+}
+
+// ==================== APPLICATIONS ====================
+
+model Application {
+  id            String            @id @default(cuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobId         String
+  job           Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  resumeId      String?
+  resume        Resume?           @relation(fields: [resumeId], references: [id])
+  coverLetterId String?
+  coverLetter   CoverLetter?      @relation(fields: [coverLetterId], references: [id])
+  
+  status        ApplicationStatus @default(PENDING)
+  isAutoApplied Boolean           @default(false)
+  appliedAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  notes         String?
+
+  statusHistory ApplicationStatusHistory[]
+
+  @@unique([userId, jobId])
+  @@map("applications")
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPLIED
+  VIEWED
+  INTERVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+model ApplicationStatusHistory {
+  id            String            @id @default(cuid())
+  applicationId String
+  application   Application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  status        ApplicationStatus
+  note          String?
+  createdAt     DateTime          @default(now())
+
+  @@map("application_status_history")
+}
+
+// ==================== NOTIFICATIONS ====================
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?            // Additional context
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  APPLICATION_UPDATE
+  NEW_JOB_MATCH
+  AUTO_APPLY_RESULT
+  SYSTEM
+}
