@@ -1,3 +1,5 @@
+// src/app.module.ts
+
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
@@ -5,6 +7,9 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 // Core modules
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './common/redis/redis.module';
+
+// Feature modules
+import { AuthModule } from './modules/auth/auth.module';
 
 // Common
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -19,7 +24,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     }),
     PrismaModule,
     RedisModule,
-    // We'll add AuthModule next
+    AuthModule,
   ],
   providers: [
     {
