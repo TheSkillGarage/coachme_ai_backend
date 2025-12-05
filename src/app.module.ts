@@ -10,6 +10,7 @@ import { RedisModule } from './common/redis/redis.module';
 
 // Feature modules
 import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 
 // Common
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -25,6 +26,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     PrismaModule,
     RedisModule,
     AuthModule,
+    UsersModule,
   ],
   providers: [
     {
