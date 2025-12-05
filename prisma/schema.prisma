@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/client"
 }
 
 datasource db {
@@ -74,14 +74,21 @@ model UserSettings {
   user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   // Work Authorization
-  workAuthorization     String?
+  authorizedRegions     String[]
   requiresSponsorship   Boolean  @default(false)
   
   // Demographics (optional, for diversity tracking)
   gender                String?
-  ethnicity             String?
+  ethnicity             String[]
   veteranStatus         String?
   disabilityStatus      String?
+
+    // AI Application Settings (from UI)
+  aiApplyEnabled        Boolean? @default(false)
+  applicationFrequency  String?
+  jobMatchThreshold     Int?
+  autoFillEnabled       Boolean? @default(false)
+  notifyBeforeAutoFill  Boolean? @default(true)
   
   // Preferences
   emailNotifications    Boolean  @default(true)
