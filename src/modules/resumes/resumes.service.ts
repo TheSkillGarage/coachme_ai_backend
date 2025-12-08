@@ -141,8 +141,6 @@ export class ResumesService {
       },
     });
 
-    await this.getResume(resumeId, userId);
-
     return updatedResume;
   }
 
