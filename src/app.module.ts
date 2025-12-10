@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 // src/app.module.ts
 
 import { Module } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { RedisModule } from './common/redis/redis.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { SettingsModule } from './modules/settings/settings.module';
+import { ResumesModule } from './modules/resumes/resumes.module';
 
 // Common
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -31,6 +33,7 @@ import { CoverLetterModule } from './modules/cover-letter/cover-letter.module';
     AuthModule,
     UsersModule,
     SettingsModule,
+    ResumesModule,
     GeminiModule,
     CoverLetterModule,
   ],
@@ -49,4 +52,4 @@ import { CoverLetterModule } from './modules/cover-letter/cover-letter.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }
