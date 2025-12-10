@@ -17,6 +17,8 @@ import { SettingsModule } from './modules/settings/settings.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { GeminiModule } from './modules/gemini/gemini.module';
+import { CoverLetterModule } from './modules/cover-letter/cover-letter.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     AuthModule,
     UsersModule,
     SettingsModule,
+    GeminiModule,
+    CoverLetterModule,
   ],
   providers: [
     {
