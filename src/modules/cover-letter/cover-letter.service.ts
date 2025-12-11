@@ -11,36 +11,35 @@ import { GeminiService } from '../gemini/gemini.service';
 export class CoverLetterService {
     constructor(
         private readonly geminiService: GeminiService,
-        private readonly prisma: PrismaService, // Injected via constructor
+        private readonly prisma: PrismaService,
     ) { }
 
     // ====================================================================
     // 1. AI GENERATION (Unchanged)
     // ====================================================================
 
-    async generate(data: GenerateCoverLetterDto): Promise<string> {
+    async generate(data: GenerateCoverLetterDto, userName: string): Promise<string> {
         const { jobTitle, companyName, tone, jobDescription, keySkills } = data;
-
         const prompt = `
-      You are an expert career coach. Write a cover letter for a ${jobTitle} position at ${companyName}.
-      
-      SETTINGS: Tone: ${tone}. Skills to Emphasize: ${keySkills.join(', ')}.
-      Job Context: Use details from this description: "${jobDescription}"
-      
-      STRICT FORMATTING RULES:
-      1. Output **ONLY** raw HTML string (no markdown, no \`\`\`html).
-      2. Use semantic HTML tags: <p>, <strong>, <ul>, <li>.
-      3. Include placeholders like [Your Name] and [Your Contact] where appropriate.
-    `;
+            You are an expert career coach. Write a cover letter for a ${jobTitle} position at ${companyName}.
+            
+            SETTINGS: Tone: ${tone}. Skills to Emphasize: ${keySkills.join(', ')}.
+            Job Context: Use details from this description: "${jobDescription}"
+            
+            STRICT FORMATTING RULES:
+            1. Output **ONLY** raw HTML string (no markdown, no \`\`\`html).
+            2. Use semantic HTML tags: <p>, <strong>, <ul>, <li>.
+            3. Use the candidate's actual name: **${userName}** for the closing signature and return address.
+        `;
 
         return this.geminiService.generateText(prompt);
     }
 
     // ====================================================================
-    // 2. CRUD OPERATIONS (Return types are now 'any')
+    // Create/Save
     // ====================================================================
 
-    // C - Create/Save
+
     async create(data: CreateCoverLetterDto): Promise<any> {
         return await this.prisma.coverLetter.create({
             data: {
@@ -54,14 +53,14 @@ export class CoverLetterService {
         });
     }
 
-    // R - Read All
+    // Read All
     async findAll(userId: string): Promise<any[]> {
         return await this.prisma.coverLetter.findMany({
             where: { userId: userId }
         });
     }
 
-    // R - Read One
+    //Read One
     async findOne(id: string, userId: string): Promise<any> {
         const letter = await this.prisma.coverLetter.findFirst({
             where: { id: id, userId: userId },
@@ -73,7 +72,7 @@ export class CoverLetterService {
         return letter;
     }
 
-    // U - Update
+    // Update
     async update(id: string, userId: string, data: UpdateCoverLetterDto): Promise<any> {
         // Ensure ownership and existence before update
         await this.findOne(id, userId);
@@ -84,7 +83,7 @@ export class CoverLetterService {
         });
     }
 
-    // D - Delete
+    // Delete
     async remove(id: string, userId: string): Promise<void> {
         await this.findOne(id, userId);
 

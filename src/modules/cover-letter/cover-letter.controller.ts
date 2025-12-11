@@ -7,6 +7,13 @@ import { GenerateCoverLetterDto, CreateCoverLetterDto, UpdateCoverLetterDto } fr
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 
+interface AuthUser {
+    id: string;
+    email: string;
+    firstName?: string | null;
+    lastName?: string | null;
+}
+
 @Controller('cover-letter')
 @UseGuards(JwtAuthGuard)
 export class CoverLetterController {
@@ -18,8 +25,11 @@ export class CoverLetterController {
     // Note: If you want to log WHO generated the letter, you'd add @CurrentUser() here too.
     @Post('generate')
     @HttpCode(HttpStatus.OK)
-    async generateCoverLetter(@Body() body: GenerateCoverLetterDto) {
-        const htmlContent = await this.coverLetterService.generate(body);
+    async generateCoverLetter(@Body() body: GenerateCoverLetterDto, @CurrentUser() user: AuthUser) {
+        const userName = [user.firstName, user.lastName]
+            .filter(Boolean)
+            .join(' ') || 'Candidate Name';
+        const htmlContent = await this.coverLetterService.generate(body, userName);
         return {
             success: true,
             message: 'Cover letter generated as HTML, ready for editing.',

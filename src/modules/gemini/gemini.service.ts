@@ -14,7 +14,7 @@ export class GeminiService {
 
     constructor(private configService: ConfigService) {
         this.genAI = new GoogleGenerativeAI(this.configService.get<string>('GEMINI_API_KEY') || '');
-        this.model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     }
 
     async generateText(prompt: string): Promise<string> {
