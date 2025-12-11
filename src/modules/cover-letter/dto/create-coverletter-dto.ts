@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import {
   ArrayMinSize,
   IsArray,
@@ -46,4 +45,4 @@ export class GenerateCoverLetterDto {
   keySkills!: string[];
 }
 
-export class UpdateCoverLetterDto extends PartialType(CreateCoverLetterDto) { }
+export class UpdateCoverLetterDto extends PartialType(CreateCoverLetterDto) {}

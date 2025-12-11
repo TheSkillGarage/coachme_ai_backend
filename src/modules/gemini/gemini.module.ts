@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { GeminiService } from './gemini.service';
 import { ConfigModule } from '@nestjs/config';
@@ -8,4 +7,4 @@ import { ConfigModule } from '@nestjs/config';
   providers: [GeminiService],
   exports: [GeminiService],
 })
-export class GeminiModule { }
+export class GeminiModule {}

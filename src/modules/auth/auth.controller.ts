@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
   Controller,
   Post,
@@ -22,7 +20,7 @@ import { Public } from '@/common/decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private auth: AuthService) { }
+  constructor(private auth: AuthService) {}
 
   @Public()
   @Post('register')
