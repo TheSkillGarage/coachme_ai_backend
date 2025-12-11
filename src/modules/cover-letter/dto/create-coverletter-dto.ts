@@ -1,5 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { ArrayMinSize, IsArray, IsBoolean, IsIn, IsNotEmpty, IsString } from "class-validator";
+import {
+  ArrayMinSize,
+  IsArray,
+  IsBoolean,
+  IsIn,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
 export class CreateCoverLetterDto {
   @IsString()
@@ -27,7 +34,7 @@ export class GenerateCoverLetterDto {
 
   @IsString()
   @IsIn(['conversational', 'formal'])
-  tone: 'conversational' | 'formal' = "conversational";
+  tone: 'conversational' | 'formal' = 'conversational';
 
   @IsNotEmpty()
   @IsString()
