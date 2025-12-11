@@ -22,7 +22,6 @@ export class CoverLetterController {
     // ====================================================================
     // 1. AI GENERATION ENDPOINT
     // ====================================================================
-    // Note: If you want to log WHO generated the letter, you'd add @CurrentUser() here too.
     @Post('generate')
     @HttpCode(HttpStatus.OK)
     async generateCoverLetter(@Body() body: GenerateCoverLetterDto, @CurrentUser() user: AuthUser) {
@@ -37,9 +36,6 @@ export class CoverLetterController {
         };
     }
 
-    // ====================================================================
-    // 2. CRUD ENDPOINTS - All now use the @CurrentUser() decorator
-    // ====================================================================
 
     // C - Create (Save Generated Letter)
     @Post()
