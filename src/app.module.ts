@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 // src/app.module.ts
 
 import { Module } from '@nestjs/common';
@@ -21,6 +22,8 @@ import { ApplicationsModule } from './modules/applications/applications.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { GeminiModule } from './modules/gemini/gemini.module';
+import { CoverLetterModule } from './modules/cover-letter/cover-letter.module';
 
 @Module({
   imports: [
@@ -37,6 +40,8 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     ResumesModule,
     NotificationsModule,
     ApplicationsModule,
+    GeminiModule,
+    CoverLetterModule,
   ],
   providers: [
     {
@@ -53,4 +58,4 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

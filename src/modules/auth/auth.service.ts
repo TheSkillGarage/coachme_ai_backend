@@ -105,8 +105,8 @@ export class AuthService {
       firstName = user?.firstName;
     }
 
-    // Store in Redis with 10 minute expiry
-    await this.redis.set(key, otp, 600);
+    // Store in Redis with 15 minute expiry
+    await this.redis.set(key, otp, 900);
 
     // Also store in database for audit
     await this.prisma.otpCode.create({
@@ -114,7 +114,7 @@ export class AuthService {
         userId,
         code: otp,
         type: 'EMAIL_VERIFICATION',
-        expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
       },
     });
 
@@ -186,7 +186,7 @@ export class AuthService {
     const key = `otp:reset:${user.id}`;
 
     // Store in Redis
-    await this.redis.set(key, otp, 600);
+    await this.redis.set(key, otp, 900);
 
     // Store in database
     await this.prisma.otpCode.create({
@@ -194,7 +194,7 @@ export class AuthService {
         userId: user.id,
         code: otp,
         type: 'PASSWORD_RESET',
-        expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
       },
     });
 
