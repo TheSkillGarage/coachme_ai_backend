@@ -8,12 +8,15 @@ import { CloudinaryService } from '@/integrations/storage/cloudinary.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import * as bcrypt from 'bcrypt';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ProfileUpdatedEvent } from '@/events/profile-updated.event';
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
     private cloudinary: CloudinaryService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async getProfile(userId: string) {
@@ -53,6 +56,15 @@ export class UsersService {
       create: { userId, ...profileData },
       update: profileData,
     });
+
+    const updatedFields = Object.keys(dto).filter(
+      (key) => dto[key as keyof UpdateProfileDto] !== undefined,
+    );
+
+    this.eventEmitter.emit(
+      'profile.updated',
+      new ProfileUpdatedEvent(userId, updatedFields),
+    );
 
     return this.getProfile(userId);
   }

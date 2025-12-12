@@ -253,6 +253,12 @@ model Application {
   updatedAt     DateTime          @updatedAt
   notes         String?
 
+  interviewDate   DateTime?
+  interviewLocation String?
+  interviewType     String?
+
+  notifications   Notification[]
+
   statusHistory ApplicationStatusHistory[]
 
   @@unique([userId, jobId])
@@ -287,13 +293,21 @@ model Notification {
   userId    String
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      NotificationType
+  priority  NotificationPriority @default(NORMAL)
   title     String
   message   String
   data      Json?            // Additional context
   isRead    Boolean          @default(false)
   createdAt DateTime         @default(now())
+  readAt    DateTime?
+
+   // Related entities (optional - for linking notifications to their source)
+  applicationId String?
+  application   Application?     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@index([userId, isRead])
+  @@index([userId, type])
+  @@index([userId, createdAt])
   @@map("notifications")
 }
 
@@ -301,5 +315,11 @@ enum NotificationType {
   APPLICATION_UPDATE
   NEW_JOB_MATCH
   AUTO_APPLY_RESULT
+  INTERVIEW_SCHEDULED
   SYSTEM
+}
+
+enum NotificationPriority {
+  NORMAL
+  HIGH
 }
