@@ -3,6 +3,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 // Core modules
 import { PrismaModule } from './prisma/prisma.module';
@@ -13,6 +14,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { ResumesModule } from './modules/resumes/resumes.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { ApplicationsModule } from './modules/applications/applications.module';
 
 // Common
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -25,12 +28,15 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
     }),
+    EventEmitterModule.forRoot(),
     PrismaModule,
     RedisModule,
     AuthModule,
     UsersModule,
     SettingsModule,
     ResumesModule,
+    NotificationsModule,
+    ApplicationsModule,
   ],
   providers: [
     {
